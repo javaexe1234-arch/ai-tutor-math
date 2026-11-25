@@ -17,13 +17,14 @@ function isTransient(e: unknown): boolean {
 }
 
 /** Retry temporary Gemini errors ("model is experiencing high demand", rate limits) with backoff. */
-export async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, attempts = 4): Promise<T> {
   for (let i = 1; ; i++) {
     try {
       return await fn();
     } catch (e) {
       if (i >= attempts || !isTransient(e)) throw e;
-      await new Promise((r) => setTimeout(r, 600 * 2 ** (i - 1) + Math.random() * 300));
+      // ~1s, 2s, 4s (+ jitter)
+      await new Promise((r) => setTimeout(r, 1000 * 2 ** (i - 1) + Math.random() * 500));
     }
   }
 }
