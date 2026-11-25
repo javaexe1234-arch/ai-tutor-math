@@ -1,5 +1,7 @@
 # MathMentor — персональный AI-репетитор по математике
 
+**🌐 Сайт: [ai-tutor-math-seven.vercel.app](https://ai-tutor-math-seven.vercel.app)** · хостинг Vercel (функции в `iad1`, рядом с базой Neon в `us-east-2`)
+
 SaaS на Next.js 15 + shadcn/ui. AI-агент — Google Gemini `gemini-3.5-flash-lite`, оплата — Stripe, вход — Auth.js.
 Бэкенд на Neon (проект `super-salad-64297161`, ветка `production`, регион `us-east-2`): Lakebase Postgres через Prisma и Object Storage (бакет `uploads` для фото решений), описаны в [`neon.ts`](neon.ts).
 
@@ -59,6 +61,14 @@ npm run dev
 - Страницы урока и практики раз в 15 с шлют heartbeat (`POST /api/usage/heartbeat`), пока вкладка видима; сервер прибавляет 15 с к `DailyUsage`.
 - Ключ периода — дата последнего наступившего полудня в часовом поясе пользователя (`currentPeriodKey` в [`src/lib/usage.ts`](src/lib/usage.ts)). Часовой пояс берётся из браузера при регистрации и входе.
 - Все AI-эндпоинты проверяют лимит, тариф и доступ к уроку на сервере (`guardPractice` в [`src/lib/api.ts`](src/lib/api.ts)).
+
+## Деплой на Vercel
+
+Проект подключён к Vercel: каждый push в `main` публикует новую версию.
+
+В настройках проекта Vercel заданы переменные: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AUTH_SECRET`, `GEMINI_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_PRICE_PRO_MONTHLY`, `STRIPE_WEBHOOK_SECRET` и ключи хранилища под именами `NEON_STORAGE_ACCESS_KEY_ID`, `NEON_STORAGE_SECRET_ACCESS_KEY`, `NEON_STORAGE_ENDPOINT`, `NEON_STORAGE_REGION` (Vercel резервирует имена `AWS_*`). Адрес сайта для Stripe берётся из `VERCEL_PROJECT_PRODUCTION_URL` автоматически.
+
+Webhook Stripe для продакшена: `https://ai-tutor-math-seven.vercel.app/api/stripe/webhook`.
 
 ## Скрипты
 
