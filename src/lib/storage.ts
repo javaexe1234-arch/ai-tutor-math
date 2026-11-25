@@ -11,7 +11,21 @@ export const UPLOADS_BUCKET = "uploads";
 
 let files: Files | null = null;
 function bucket(): Files {
-  files ??= new Files({ adapter: neon({ bucket: UPLOADS_BUCKET }) });
+  // Locally the adapter reads the AWS_* vars from `neon env pull`. Hosts that reserve AWS_* names
+  // (e.g. Vercel) set the same values as NEON_STORAGE_* instead.
+  const e = process.env;
+  const explicit =
+    e.NEON_STORAGE_ACCESS_KEY_ID && e.NEON_STORAGE_SECRET_ACCESS_KEY
+      ? { accessKeyId: e.NEON_STORAGE_ACCESS_KEY_ID, secretAccessKey: e.NEON_STORAGE_SECRET_ACCESS_KEY }
+      : {};
+  files ??= new Files({
+    adapter: neon({
+      bucket: UPLOADS_BUCKET,
+      endpoint: e.NEON_STORAGE_ENDPOINT || undefined,
+      region: e.NEON_STORAGE_REGION || undefined,
+      ...explicit,
+    }),
+  });
   return files;
 }
 

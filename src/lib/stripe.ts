@@ -17,7 +17,9 @@ export function proPriceId(): string {
 }
 
 export function appUrl(path = ""): string {
-  return `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}${path}`;
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL; // set automatically on Vercel
+  const base = process.env.NEXT_PUBLIC_APP_URL || (vercel ? `https://${vercel}` : "http://localhost:3000");
+  return `${base}${path}`;
 }
 
 /** Mirror a Stripe subscription onto our user row. Stripe is the source of truth. */
